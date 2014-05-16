@@ -1,0 +1,270 @@
+<?php
+namespace LiquidWeb\NetMapSvc\Node;
+use \LiquidWeb\NetMapSvc;
+require(dirname(__FILE__) . '/Definitions/Generic.php');
+require(dirname(__FILE__) . '/Definitions/HighLevel.php');
+require(dirname(__FILE__) . '/Definitions/LowLevel.php');
+
+	
+	/**
+	 * 
+	 * @author Jason Gillman Jr. <jgillman@liquidweb.com>
+	 * 
+	 * Provides functions to instantiate node objects, as well as provides a utility function or two
+	 *
+	 */
+
+	/**
+	 *
+	 * @return array An array describing the available node types including class name, neo4j label, specified properties, and valid relation types
+	 *
+	 */
+	function availableTypes()
+	{
+		$nsRegex =  '/' . preg_quote(__NAMESPACE__) . '\\\\/';
+		$nodeTypeList = preg_grep($nsRegex, get_declared_classes());
+
+		// Eliminate abstract node types
+		foreach($nodeTypeList as $idx => $nodeClass)
+		{
+			$classTester = new \ReflectionClass($nodeClass);
+			if($classTester->isAbstract())
+			{
+				unset($nodeTypeList[$idx]);
+			}
+			unset($classTester);
+		}
+		unset($nodeClass);
+
+		foreach($nodeTypeList as $nodeClass)
+		{
+			$tempNode = new $nodeClass('tempNode');
+			$nodeTypes[preg_split($nsRegex, $nodeClass)[1]]['neo4jLabel'] = $tempNode->retrieveNodeType();
+			$nodeTypes[preg_split($nsRegex, $nodeClass)[1]]['properties'] = $tempNode->listProperties();
+			$nodeTypes[preg_split($nsRegex, $nodeClass)[1]]['relations'] = $tempNode->retrieveValidRelations();
+			unset($tempNode);
+		}
+		unset($nodeClass);
+
+		return $nodeTypes;
+	}
+
+	/**
+	 *
+	 * @param string $nodeName The name of the node to be created
+	 * @param string $nodeClass The class name of the node type you wish to instantiate
+	 * @param array $nodeProperties The properties or traits, if any, you want to pass to the node upon instantiation
+	 * @return object Returns an object of the type
+	 * @throws Exception Throws an exception if there is a failure on property creation
+	 * @throws Exception Throws an exception if an invalid node type is supplied
+	 *
+	 */
+	function makeNew($nodeName, $nodeClass, array $nodeProperties = NULL)
+	{
+		if(array_key_exists($nodeClass, availableTypes()))
+		{
+			$nodeClass = __NAMESPACE__ . '\\' . $nodeClass;
+			try
+			{
+				return new $nodeClass($nodeName, $nodeProperties);
+			}
+			catch(\Exception $e)
+			{
+				throw new \Exception($e->getMessage() . ' - could not create new node object');
+			}
+		}
+		else
+		{
+			throw new \Exception('Invalid node type: ' . $nodeClass);
+		}
+	}
+
+	/**
+	 *
+	 * @param object $nodeObj The node object to have the property or trait set on. Will overwrite any existing values
+	 * @param string $property The name of the property or trait you want to set
+	 * @param mixed $value The value of the property or trait you want to set
+	 * @return array Returns the set trait or property and the value
+	 * @throws Exception 
+	 *
+	 */
+	function setPropOrTrait(genericNode &$nodeObj, $property, $value)
+	{
+		try
+		{
+			return $nodeObj->setPropOrTrait($property, $value);
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception($e->getMessage());
+		}
+	}
+
+	/**
+	 * 
+	 * @param object $nodeObj The object to remove the property or trait from
+	 * @param string $property The property or trait you want to remove/unset
+	 * @return void
+	 * @throws Exception
+	 * 
+	 * Removes the specified property or trait.
+	 * 
+	 */
+	function removePropOrTrait(genericNode &$nodeObj, $property)
+	{
+		try
+		{
+			$nodeObj->removePropOrTrait($property);
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception($e->getMessage());
+		}
+	}
+
+	/**
+	 *
+	 * @param object $nodeObj Loads the node to be either created or updated by reference and pushed to neo4j. Loaded by reference so that the object can have its $neo4jObj property set if being instantiated
+	 * @return void
+	 *
+	 */
+	function instantiateUpdate(genericNode &$nodeObj)
+	{
+		$client = $GLOBALS['client'];
+		try
+		{
+			$nodeObj->validateNode();
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception('Error instantiating node: ' . $e->getMessage());
+		}
+		if($nodeObj->validateNode() === TRUE)
+		{
+			if($nodeObj->getNeo4jObj() === NULL) // We are instantiating a new node
+			{
+				$stagedNode = $client->makeNode();
+				$stagedNode->setProperties(array_merge($nodeObj->retrievePropertiesData(), $nodeObj->retrieveTraits()));
+				$stagedNode->save();
+				$stagedNode->addLabels(array($client->makeLabel($nodeObj->retrieveNodeType()))); // Add the label
+				$nodeObj->setNeo4jObj($stagedNode); // Pass back the neo4j object
+			}
+			else // Updating an existing node
+			{
+				// Look for properties that should be removed
+				$neo4jProps = $nodeObj->getNeo4jObj()->getProperties();
+				$localProps = array_merge($nodeObj->retrievePropertiesData(), $nodeObj->retrieveTraits());
+				$propsToRemove = array_diff_key($neo4jProps, $localProps);
+				if(count($propsToRemove) > 0)
+				{
+					foreach($propsToRemove as $prop => $value)
+					{
+						$nodeObj->getNeo4jObj()->removeProperty($prop);
+					}
+				}
+
+				$nodeObj->getNeo4jObj()->setProperties(array_merge($nodeObj->retrievePropertiesData(), $nodeObj->retrieveTraits()));
+				$nodeObj->getNeo4jObj()->save();
+			}
+		}
+	}
+
+	/**
+	 *
+	 * @param int $id The ID of the neo4j node you want to import
+	 * @return object Returns an object based on the neo4j node imported
+	 * @throws Exception Throws an exception if the node doesn't exist
+	 *
+	 */
+	function fromNeo4j($id)
+	{
+		$client = $GLOBALS['client'];
+		$neo4jNode = $client->getNode($id);
+		if($neo4jNode === NULL) // If there is no node, toss an exception
+		{
+			throw new \Exception('A node with the ID ' . $id . ' does not exist');
+		}
+		$nodeName = $neo4jNode->getProperty('name');
+		$nodeClass = $neo4jNode->getProperty('className');
+		$nodeProperties = $neo4jNode->getProperties();
+
+		// Unsetting these - name isn't needed, and trying to change className will toss an exception
+		unset($nodeProperties['className']);
+		unset($nodeProperties['name']);
+
+		$localNode = makeNew($nodeName, $nodeClass, $nodeProperties);
+		$localNode->setNeo4jObj($neo4jNode);
+
+		return $localNode;
+	}
+
+	/**
+	 *
+	 * @param int $id The id of the neo4j node you want to delete
+	 * @return bool Returns TRUE on sucess, FALSE if the node doesn't exist
+	 * @throws Exception Throws an exception if the node can't be deleted, ususally because it's part of a relation
+	 *
+	 */
+	function delete($id)
+	{
+		$client = $GLOBALS['client'];
+		$delNode = $client->getNode($id);
+		try
+		{
+			if($delNode == NULL)
+			{
+				return FALSE;
+			}
+			$delNode->delete();
+			return TRUE;
+		}
+		catch (\Everyman\Neo4j\Exception $neo4jEx)
+		{
+			throw new \Exception('Neo4j Exception: Unable to delete node with ID ' . $id . ' - ensure it is not part of a relation');
+		}
+	}
+
+	/**
+	 *
+	 * @param string $searchOn Whether to search against properties or a labels
+	 * @param array $searchValues The value(s) to search for. In the case of property search, keyed by the property
+	 * @return array An array of localized nodes or null
+	 *
+	 */
+	function search($searchOn, $searchValues)
+	{
+		$client = $GLOBALS['client'];
+
+		switch($searchOn)
+		{
+			case 'label':
+				foreach($searchValues as $searchValue)
+				{
+					$qString = 'MATCH (n:`' . $searchValue . '`) RETURN n';
+					$neo4jQuery = new \Everyman\Neo4j\Cypher\Query($client, $qString);
+					$neo4jResultSet = $neo4jQuery->getResultSet();
+
+					foreach($neo4jResultSet as $neo4jResult)
+					{
+						$nodeArray[] = fromNeo4j($neo4jResult['n']->getId());
+					}
+				}
+				return $nodeArray;
+				break;
+
+			case 'property': // I'm thinking I may just nix this as it would be horrid. Recommend using a direct cypher query
+			/*
+				$qString = 'MATCH n WHERE ';
+				foreach($searchValues as $property => $value)
+				{
+
+				}
+			*/
+				break;
+
+			default:
+				break;
+		}
+	}
+?>
+

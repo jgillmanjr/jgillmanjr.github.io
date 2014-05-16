@@ -1,0 +1,80 @@
+<?php
+namespace LiquidWeb\NetMapSvc\Paths;
+use \LiquidWeb\NetMapSvc;
+
+	/**
+	 *
+	 * @author Jason Gillman Jr. <jgillman@liquidweb.com>
+	 *
+	 * This class defines a Paths object
+	 *
+	 */
+	class Paths
+	{
+		/**
+		 *
+		 * @var string $pathAlgo The algorithm used to get the path(s)
+		 *
+		 */
+		private $pathAlgo;
+
+		/**
+		 *
+		 * @var array $paths An array of the returned paths
+		 * 
+		 * A path is essentially an array of locally instantiated relation objects on the order that they appear (\LiquidWeb\NetMapSvc\Relation\Relationship)
+		 *
+		 */
+		private $paths;
+
+		/**
+		 *
+		 * @param integer $startId The neo4j ID of the starting node
+		 * @param integer $endId The neo4j ID of the end node
+		 * @param integer $depth The maximum depth to look for a path
+		 * @param string the path algorithm to use (allSimplePaths, allPaths, shortestPath, dijkstra)
+		 * @throws Exception Throws an exception if there was an issue creating the Paths object
+		 *
+		 */
+		public function __construct($startId, $endId, $depth = 15, $pathAlgo = 'allSimplePaths')
+		{
+			try
+			{
+				$this->pathAlgo = $pathAlgo;
+
+				$startNode = NetMapSvc\Node\fromNeo4j($startId)->getNeo4jObj();
+				$endNode = NetMapSvc\Node\fromNeo4j($endId)->getNeo4jObj();
+
+				$neo4jPaths = $startNode->findPathsTo($endNode)->setAlgorithm($pathAlgo)->setMaxDepth($depth)->getPaths();
+
+				if(count($neo4jPaths) == 0)
+				{
+					throw new \Exception('No paths were found from node ' . $startId . ' to node ' . $endId . '. Search depth is ' . $depth);
+				}
+
+				foreach($neo4jPaths as $idx => $neo4jPath)
+				{
+					$neo4jPathRels = $neo4jPath->getRelationships();
+					foreach($neo4jPathRels as $neo4jPathRel)
+					{
+						$this->paths[$idx][] = NetMapSvc\Relation\fromNeo4j($neo4jPathRel->getId());
+					}
+				}
+			}
+			catch(\Exception $e)
+			{
+				throw new \Exception('Error constructing paths object: ' . $e->getMessage());
+			}
+		}
+
+		/**
+		 *
+		 * @return array Returns an array of the paths found
+		 *
+		 */
+		public function getPaths()
+		{
+			return $this->paths;
+		}
+	}
+

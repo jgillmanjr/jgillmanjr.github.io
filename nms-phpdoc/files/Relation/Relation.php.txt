@@ -1,0 +1,174 @@
+<?php
+namespace LiquidWeb\NetMapSvc\Relation;
+use \LiquidWeb\NetMapSvc;
+require(dirname(__FILE__) . '/Definition.php');
+
+	/**
+	 * 
+	 * @author Jason Gillman Jr. <jgillman@liquidweb.com>
+	 * 
+	 * Provides functions to instantiate relation objects
+	 *
+	 */
+
+	/**
+	 *
+	 * @param integer $startId The neo4j ID of the starting node
+	 * @param integer $endId The neo4j ID of the end node
+	 * @param string $relationType The relation type
+	 * @param array $relationProperties Properties of the relation (if any)
+	 * @return object Returns a relation object
+	 * @throws Exception Throws an exception if the relation creation fails
+	 *
+	 */
+	function makeNew($startId, $endId, $relationType, array $relationProperties = NULL)
+	{
+		try
+		{
+			return new Relation($startId, $endId, $relationType, $relationProperties);
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception('Could not create new relation: ' . $e->getMessage());
+		}
+	}
+
+	/**
+	 *
+	 * @param object $relationObj The relation object to have the property set on
+	 * @param string $property The name of the property
+	 * @param mixed $value The property value
+	 * @return void
+	 *
+	 */
+	function setProperty(Relation &$relationObj, $property, $value)
+	{
+		$relationObj->setProperty($property, $value);
+	}
+
+	/**
+	 *
+	 * @param object $relationObj The relation object to have the property removed from
+	 * @param string $property The property to remove
+	 * @return void
+	 *
+	 */
+	function removeProperty(Relation &$relationObj, $property)
+	{
+		$relationObj->removeProperty($property);
+	}
+
+	/**
+	 *
+	 * @param object $relationObj Loads the relation to be created by reference and creates it in neo4j. Loaded by reference so that the object can have its $neo4jId property set
+	 * @return void
+	 * @throws Exception Throws an exception if something goes sideways
+	 *
+	 */
+	function instantiateUpdate(Relation &$relationObj)
+	{
+		try
+		{
+			$client = $GLOBALS['client'];
+			if($relationObj->getNeo4jObj() === NULL) // New relation
+			{
+				$stagedRelation = $client->makeRelationship();
+
+				$startNode = $relationObj->getStartObj()->getNeo4jObj();
+				$endNode = $relationObj->getEndObj()->getNeo4jObj();
+
+				$stagedRelation->setStartNode($startNode);
+				$stagedRelation->setEndNode($endNode);
+				$stagedRelation->setType($relationObj->getType());
+
+				if($relationObj->getProperties() != NULL) // Don't worry about setting properties if none set (removes warnings)
+				{
+					$stagedRelation->setProperties($relationObj->getProperties());
+				}
+				$stagedRelation->save();
+
+				$relationObj->setNeo4jObj($stagedRelation); // Pass back the neo4j object
+			}
+			else // Existing relation
+			{
+				// Look for properties that should be removed
+				$neo4jProps = $relationObj->getNeo4jObj()->getProperties();
+				$propsToRemove = array_diff_key($neo4jProps, $relationObj->getProperties());
+				if(count($propsToRemove) > 0)
+				{
+					foreach($propsToRemove as $prop => $value)
+					{
+						$relationObj->getNeo4jObj()->removeProperty($prop);
+					}
+				}
+
+				$relationObj->getNeo4jObj()->setProperties($relationObj->getProperties());
+				$relationObj->getNeo4jObj()->save();
+			}
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception('Error instantiating or updating relation: ' . $e->getMessage());
+		}
+	}
+
+	/**
+	 *
+	 * @param int $id The ID of the neo4j relation you want to import
+	 * @return object Returns a local object based on the neo4j relation imported
+	 * @throws Exception Throws an exception if we have issues
+	 *
+	 */
+	function fromNeo4j($id)
+	{
+		try
+		{
+			$client = $GLOBALS['client'];
+			$neo4jRelation = $client->getRelationship($id);
+			if($neo4jRelation === NULL) // If there is no relation, toss an exception
+			{
+				throw new \Exception('A relation with the ID ' . $id . ' does not exist');
+			}
+			$relationType = $neo4jRelation->getType();
+			$startId = $neo4jRelation->getStartNode()->getId();
+			$endId = $neo4jRelation->getEndNode()->getId();
+			$relationProperties = $neo4jRelation->getProperties();
+
+			$localRelation = makeNew($startId, $endId, $relationType, $relationProperties);
+			$localRelation->setNeo4jObj($neo4jRelation);
+
+			return $localRelation;
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception('Error creating local relation object from neo4j: ' . $e->getMessage());
+		}
+	}
+
+	/**
+	 *
+	 * @param integer $id The ID of the neo4j relation to delete
+	 * @return string The status of the operation: TRUE if success, FALSE if the relation doesn't exist
+	 * @throws Exception 
+	 *
+	 */
+	function delete($id)
+	{
+		$client = $GLOBALS['client'];
+		$delRel = $client->getRelationship($id);
+		try
+		{
+			if($delRel == NULL)
+			{
+				return FALSE;
+			}
+			$delRel->delete();
+			return TRUE;
+		}
+		catch (\Everyman\Neo4j\Exception $neo4jEx)
+		{
+			throw new \Exception('Neo4j Exception while deleting node ID (' . $id . '): ' . $neo4jEx->getMessage());
+		}
+	}
+?>
+

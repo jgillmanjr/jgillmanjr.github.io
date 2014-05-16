@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>API Documentation</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/prism.css" rel="stylesheet" media="all"/>
+    <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+    <!--[if lt IE 9]>
+    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <![endif]-->
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="../js/jquery.smooth-scroll.js"></script>
+    <script src="../js/prism.min.js"></script>
+    <!-- TODO: Add http://jscrollpane.kelvinluck.com/ to style the scrollbars for browsers not using webkit-->
+    <script type="text/javascript">
+    function loadExternalCodeSnippets() {
+        Array.prototype.slice.call(document.querySelectorAll('pre[data-src]')).forEach(function (pre) {
+            var src = pre.getAttribute('data-src');
+            var extension = (src.match(/\.(\w+)$/) || [, ''])[1];
+            var language = 'php';
+
+            var code = document.createElement('code');
+            code.className = 'language-' + language;
+
+            pre.textContent = '';
+
+            code.textContent = 'Loading…';
+
+            pre.appendChild(code);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', src, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+
+                    if (xhr.status < 400 && xhr.responseText) {
+                        code.textContent = xhr.responseText;
+
+                        Prism.highlightElement(code);
+                    }
+                    else if (xhr.status >= 400) {
+                        code.textContent = '✖ Error ' + xhr.status + ' while fetching file: ' + xhr.statusText;
+                    }
+                    else {
+                        code.textContent = '✖ Error: File does not exist or is empty';
+                    }
+                }
+            };
+
+            xhr.send(null);
+        });
+    }
+
+    $(document).ready(function(){
+        loadExternalCodeSnippets();
+    });
+    $('#source-view').on('shown', function () {
+        loadExternalCodeSnippets();
+    })
+</script>
+
+    <link rel="shortcut icon" href="../images/favicon.ico"/>
+    <link rel="apple-touch-icon" href="../images/apple-touch-icon.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="../images/apple-touch-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="../images/apple-touch-icon-114x114.png"/>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <i class="icon-ellipsis-vertical"></i>
+            </a>
+            <a class="brand" href="../index.html">API Documentation</a>
+
+            <div class="nav-collapse">
+                <ul class="nav pull-right">
+                                        <li class="dropdown">
+                        <a href="../index.html" class="dropdown-toggle" data-toggle="dropdown">
+                            API Documentation <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                                                        <li><a href="../namespaces/LiquidWeb.html">\LiquidWeb</a></li>
+                                                    </ul>
+                    </li>
+                                        <li class="dropdown" id="charts-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Charts <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../graphs/class.html">
+                                    <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="dropdown" id="reports-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Reports <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="../reports/errors.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">113</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/markers.html">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="../reports/deprecated.html">
+                                                                                                            <i class="icon-list-alt"></i>&#160;Deprecated <span class="label label-info pull-right">0</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--<div class="go_to_top">-->
+    <!--<a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>-->
+    <!--</div>-->
+</div>
+
+<div id="___" class="container-fluid">
+        <section class="row-fluid">
+        <div class="span2 sidebar">
+                                <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1299353039"></a>
+                                <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
+            </div>
+            <div id="namespace-1299353039" class="accordion-body collapse in">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1952649323"></a>
+                                <a href="../namespaces/LiquidWeb.html" style="margin-left: 30px; padding-left: 0">LiquidWeb</a>
+            </div>
+            <div id="namespace-1952649323" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1213368692"></a>
+                                <a href="../namespaces/LiquidWeb.NetMapSvc.html" style="margin-left: 30px; padding-left: 0">NetMapSvc</a>
+            </div>
+            <div id="namespace-1213368692" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1509705688"></a>
+                                <a href="../namespaces/LiquidWeb.NetMapSvc.Node.html" style="margin-left: 30px; padding-left: 0">Node</a>
+            </div>
+            <div id="namespace-1509705688" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.datacenter.html">datacenter</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.firewall.html">firewall</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNetworking.html">genericNetworking</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html">genericNode</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.ipNet.html">ipNet</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.lbCluster.html">lbCluster</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.lbService.html">lbService</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.loadBalancer.html">loadBalancer</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.netSwitch.html">netSwitch</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.nodePool.html">nodePool</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.physIface.html">physIface</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.popSite.html">popSite</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.rack.html">rack</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.router.html">router</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.row.html">row</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.section.html">section</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.server.html">server</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.trfIpGrp.html">trfIpGrp</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.virtIface.html">virtIface</a></li>
+                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Node.virtServer.html">virtServer</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1828957315"></a>
+                                <a href="../namespaces/LiquidWeb.NetMapSvc.Paths.html" style="margin-left: 30px; padding-left: 0">Paths</a>
+            </div>
+            <div id="namespace-1828957315" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Paths.Paths.html">Paths</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                                                    <div class="accordion" style="margin-bottom: 0">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1813450089"></a>
+                                <a href="../namespaces/LiquidWeb.NetMapSvc.Relation.html" style="margin-left: 30px; padding-left: 0">Relation</a>
+            </div>
+            <div id="namespace-1813450089" class="accordion-body collapse ">
+                <div class="accordion-inner">
+
+                    
+                    <ul>
+                                                                                                    <li class="class"><a href="../classes/LiquidWeb.NetMapSvc.Relation.Relation.html">Relation</a></li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+                    
+                    <ul>
+                                                                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </section>
+    <section class="row-fluid">
+        <div class="span10 offset2">
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <nav>
+                                                <a href="../namespaces/LiquidWeb.NetMapSvc.Node.html">\LiquidWeb\NetMapSvc\Node</a> <i class="icon-level-up"></i>
+                                            </nav>
+                    <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal"><i class="icon-code"></i></a>
+
+                    <h1><small>\LiquidWeb\NetMapSvc\Node</small>lbCluster</h1>
+                    <p><em></em></p>
+                    
+
+                    <section id="summary">
+                        <h2>Summary</h2>
+                        <section class="row-fluid heading">
+                            <section class="span4">
+                                <a href="#methods">Methods</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#properties">Properties</a>
+                            </section>
+                            <section class="span4">
+                                <a href="#constants">Constants</a>
+                            </section>
+                        </section>
+                        <section class="row-fluid public">
+                            <section class="span4">
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.lbCluster.html#method___construct" class="">__construct()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_setPropOrTrait" class="">setPropOrTrait()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_removePropOrTrait" class="">removePropOrTrait()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_listProperties" class="">listProperties()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_retrievePropertiesData" class="">retrievePropertiesData()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_getId" class="">getId()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_retrieveTraits" class="">retrieveTraits()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_listAndDescribeNodeTypes" class="">listAndDescribeNodeTypes()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_retrieveNodeType" class="">retrieveNodeType()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_retrieveNodeClass" class="">retrieveNodeClass()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_retrieveValidRelations" class="">retrieveValidRelations()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_setNeo4jObj" class="">setNeo4jObj()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_getNeo4jObj" class="">getNeo4jObj()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_toArray" class="">toArray()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_validateProperty" class="">validateProperty()</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#method_validateNode" class="">validateNode()</a><br />
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No public properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No constants found</em>
+                                                            </section>
+                        </section>
+                        <section class="row-fluid protected">
+                            <section class="span4">
+                                                                    <em>No protected methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#property_nodeProperties" class="">$nodeProperties</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#property_nodeTraits" class="">$nodeTraits</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#property_nodeType" class="">$nodeType</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#property_neo4jObj" class="">$neo4jObj</a><br />
+                                                                    <a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html#property_validRelations" class="">$validRelations</a><br />
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                        <section class="row-fluid private">
+                            <section class="span4">
+                                                                    <em>No private methods found</em>
+                                                            </section>
+                            <section class="span4">
+                                                                    <em>No private properties found</em>
+                                                            </section>
+                            <section class="span4">
+                                <em>N/A</em>
+                            </section>
+                        </section>
+                    </section>
+                </div>
+                <aside class="span4 detailsbar">
+                                        
+                    
+                    <dl>
+                        <dt>File</dt>
+                            <dd><a href="../files/Node.Definitions.LowLevel.php.html"><div class="path-wrapper">Node/Definitions/LowLevel.php</div></a></dd>
+                                                <dt>Package</dt>
+                            <dd><div class="namespace-wrapper"></div></dd>
+                                                <dt>Class hierarchy</dt>
+                            <dd class="hierarchy">
+                                                                                                                                                                                                                                                                                                
+                                        <div class="namespace-wrapper"><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html">\LiquidWeb\NetMapSvc\Node\genericNode</a></div>
+                                                                                                    <div class="namespace-wrapper">\LiquidWeb\NetMapSvc\Node\lbCluster</div>
+                            </dd>
+
+                        
+                        
+                        
+                        
+                                                                        </dl>
+                    <h2>Tags</h2>
+                    <table class="table table-condensed">
+                                            <tr>
+                            <th>
+                                todo
+                            </th>
+                            <td>
+                                                            </td>
+                        </tr>
+                                        </table>
+                </aside>
+            </div>
+
+                        
+                                    <a id="properties" name="properties"></a>
+            <div class="row-fluid">
+                <div class="span8 content class">
+                    <h2>Properties</h2>
+                </div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_nodeProperties" name="property_nodeProperties" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$nodeProperties</h3>
+                <pre class="signature">$nodeProperties : array</pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                array
+                &mdash; Contains the properties that a node can have, the type to be used, and the optionality of the property
+The primary key of $nodeProperties is the name of the property
+This primary key will contain an array that indicates the type [&#039;type&#039;], optionality [&#039;required&#039;], and the data itself [&#039;data&#039;]
+An example of this is the &#039;name&#039; property:
+$this-&gt;nodeProperties[&#039;name&#039;][&#039;type&#039;] = &#039;string&#039;;
+$this-&gt;nodeProperties[&#039;name&#039;][&#039;required&#039;] = TRUE;
+$this-&gt;nodeProperties[&#039;name&#039;][&#039;data&#039;] = $data;                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_nodeTraits" name="property_nodeTraits" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$nodeTraits</h3>
+                <pre class="signature">$nodeTraits : array</pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                array
+                &mdash; These are &#039;free form&#039; node properties that would be used to represent arbitrary traits that may be assigned
+In the form of $nodeTraits[&#039;name&#039;] = $value;                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_nodeType" name="property_nodeType" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$nodeType</h3>
+                <pre class="signature">$nodeType : string</pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                string
+                &mdash; Contains the verbose version of the node type                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_neo4jObj" name="property_neo4jObj" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$neo4jObj</h3>
+                <pre class="signature">$neo4jObj : object</pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                object
+                &mdash; If the node object was created from neo4j, or was instantiated in neo4j, the object goes here                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="property_validRelations" name="property_validRelations" class="anchor"></a>
+            <article class="property">
+                <h3 class="protected ">$validRelations</h3>
+                <pre class="signature">$validRelations : array</pre>
+                <p><em></em></p>
+                
+
+                                <h4>Type</h4>
+                array
+                &mdash; This array specifies the valid &quot;outbound&quot; relation(s) the node type will support and the valid type(s) as targets of a particular relationship
+Structure of the array:
+$this-&gt;validRelations[&#039;relation_type1&#039;] = array(&#039;allowed_class1&#039;, &#039;allowed_class2&#039;);
+$this-&gt;validRelations[&#039;relation_type2&#039;] = array(&#039;allowed_class3&#039;);
+Example for `virtIface` class:
+$this-&gt;validRelations[&#039;connects&#039;] = array(&#039;virtIface&#039;);
+$this-&gt;validRelations[&#039;from&#039;] = array(&#039;physIface&#039;, &#039;router&#039;, &#039;server&#039;, &#039;switch&#039;, &#039;firewall&#039;);                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                        <dl>
+                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                            
+                                    <a id="methods" name="methods"></a>
+            <div class="row-fluid">
+                <div class="span8 content class"><h2>Methods</h2></div>
+                <aside class="span4 detailsbar"></aside>
+            </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method___construct" name="method___construct" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">__construct()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">__construct( <span class="argument">$name</span>, array <span class="argument">$propTraits</span>)</pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$name </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td>array</td>
+                                <td>$propTraits </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_setPropOrTrait" name="method_setPropOrTrait" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">setPropOrTrait()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">setPropOrTrait(string <span class="argument">$property</span>, mixed <span class="argument">$value</span>) : array</pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$property </td>
+                                <td><p>The property or trait you want to set</p></td>
+                            </tr>
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$value </td>
+                                <td><p>The value of the property or trait you want to set</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\LiquidWeb\NetMapSvc\Node\Exception</dt>
+                            <dd><p>Throws an exception if the className proptery is attempted to be changed
+Sets the value for a node property or trait. Will overwrite any existing values. Returns the set trait or property and the value.</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>The set trait or property and the value</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_removePropOrTrait" name="method_removePropOrTrait" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">removePropOrTrait()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">removePropOrTrait(string <span class="argument">$property</span>)</pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>string</td>
+                                <td>$property </td>
+                                <td><p>The property or trait you want to remove/unset
+Removes the specified property or trait.</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_listProperties" name="method_listProperties" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">listProperties()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">listProperties(boolean <span class="argument">$required</span>) : array</pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>boolean</td>
+                                <td>$required </td>
+                                <td><p>If TRUE, show only required properties, otherwise show all properties</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>Returns the list of properties, their optionality and data types
+Returns a list of properties available for a node, their optionality, and their data type</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_retrievePropertiesData" name="method_retrievePropertiesData" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">retrievePropertiesData()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">retrievePropertiesData() : array</pre>
+                <p><em></em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>Returns the list of set properties with the associated data
+Returns a list of properties that have data set along with the data</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getId" name="method_getId" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getId()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getId() : int</pre>
+                <p><em></em></p>
+                
+
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\LiquidWeb\NetMapSvc\Node\Exception</dt>
+                            <dd><p>Throws an exception if the node is not instantiated</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    int
+                                            &mdash; <p>Returns the ID of the insantiated node</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_retrieveTraits" name="method_retrieveTraits" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">retrieveTraits()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">retrieveTraits() : array</pre>
+                <p><em></em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>Returns the list of set traits
+Returns a list of set traits and their values</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_listAndDescribeNodeTypes" name="method_listAndDescribeNodeTypes" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">listAndDescribeNodeTypes()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">listAndDescribeNodeTypes() : array</pre>
+                <p><em></em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>Returns a an array describing the nodes
+This method will return an array describing the nodes, including their verbose type name (Label in neo4j), properties, and valid relations</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                            <span class="label label-info">static</span>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_retrieveNodeType" name="method_retrieveNodeType" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">retrieveNodeType()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">retrieveNodeType() : string</pre>
+                <p><em></em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Returns the verbose node type that will be used
+This method returns $nodeType to be used for creation of the node</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_retrieveNodeClass" name="method_retrieveNodeClass" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">retrieveNodeClass()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">retrieveNodeClass() : string</pre>
+                <p><em></em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    string
+                                            &mdash; <p>Returns the class name
+This method returns the class name of the object</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_retrieveValidRelations" name="method_retrieveValidRelations" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">retrieveValidRelations()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">retrieveValidRelations() : array</pre>
+                <p><em></em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>Returns the array of valid relations
+Returns the valid "outbound" relations array (an empty array if there are non set for a particular class)</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_setNeo4jObj" name="method_setNeo4jObj" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">setNeo4jObj()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">setNeo4jObj(object <span class="argument">$neo4jObj</span>)</pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>object</td>
+                                <td>$neo4jObj </td>
+                                <td><p>The neo4j object of the node</p></td>
+                            </tr>
+                                            </table>
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\LiquidWeb\NetMapSvc\Node\Exception</dt>
+                            <dd><p>Throws an exception if the Neo4j object doesn't match the local object for which you are assigning</p></dd>
+                                                                    </dl>
+                
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_getNeo4jObj" name="method_getNeo4jObj" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">getNeo4jObj()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">getNeo4jObj() : object|null</pre>
+                <p><em></em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    object|null
+                                            &mdash; <p>The neo4j object of the node if set, otherwise null</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_toArray" name="method_toArray" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">toArray()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">toArray() : array</pre>
+                <p><em></em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                            &mdash; <p>A representation of the node in array form</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_validateProperty" name="method_validateProperty" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">validateProperty()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">validateProperty(mixed <span class="argument">$property</span>) : boolean|object</pre>
+                <p><em></em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td>mixed</td>
+                                <td>$property </td>
+                                <td><p>The property you're validating</p></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    boolean|object
+                                            &mdash; <p>Returns TRUE if the property passes validation, returns an Exception object if it does not
+Checks to ensure that the property value is proper for the type defined for it</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_validateNode" name="method_validateNode" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">validateNode()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">validateNode() : boolean</pre>
+                <p><em></em></p>
+                
+
+                
+                                    <h4>Throws</h4>
+                    <dl>
+                                                    <dt>\LiquidWeb\NetMapSvc\Node\Exception</dt>
+                            <dd><p>Thrown if a required property is not set</p></dd>
+                                                    <dt>\LiquidWeb\NetMapSvc\Node\Exception</dt>
+                            <dd><p>Thrown if a required property didn't pass validation
+Checks to ensure that all required properties are set and that the data defined passes validation</p></dd>
+                                                                    </dl>
+                
+                                    <h4>Returns</h4>
+                    boolean
+                                            &mdash; <p>Returns TRUE if the node passes validation</p>
+                                                </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                    <dt>Inherited from</dt>
+                    <dd><a href="../classes/LiquidWeb.NetMapSvc.Node.genericNode.html"><div class="path-wrapper">\LiquidWeb\NetMapSvc\Node\genericNode</div></a></dd>
+                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr>
+                        <th>
+                            todo
+                        </th>
+                        <td>
+                                                    </td>
+                    </tr>
+                            </table>
+        </aside>
+    </div>
+
+                                                                    </div>
+    </section>
+
+    <div id="source-view" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="source-view-label" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="source-view-label">LowLevel.php</h3>
+        </div>
+        <div class="modal-body">
+            <pre data-src="../files/Node/Definitions/LowLevel.php.txt" class="language-php line-numbers"></pre>
+        </div>
+    </div>
+
+    <footer class="row-fluid">
+        <section class="span10 offset2">
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <section class="row-fluid footer-sections">
+                        <section class="span4">
+                                                        <h1><i class="icon-code"></i></h1>
+                            <div>
+                                <ul>
+                                                                            <li><a href="../namespaces/LiquidWeb.html">\LiquidWeb</a></li>
+                                                                    </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-bar-chart"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../graphs/class.html">Class Hierarchy Diagram</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="span4">
+                                                        <h1><i class="icon-pushpin"></i></h1>
+                            <div>
+                                <ul>
+                                    <li><a href="../reports/errors.html">Errors</a></li>
+                                    <li><a href="../reports/markers.html">Markers</a></li>
+                                </ul>
+                            </div>
+                        </section>
+                    </section>
+                </section>
+            </section>
+            <section class="row-fluid">
+                <section class="span10 offset1">
+                    <hr />
+                    Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and authored
+                    on May 16th, 2014 at 20:50.
+                </section>
+            </section>
+        </section>
+    </footer>
+</div>
+
+</body>
+</html>

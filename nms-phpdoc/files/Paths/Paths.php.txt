@@ -1,0 +1,37 @@
+<?php
+namespace LiquidWeb\NetMapSvc\Paths;
+use \LiquidWeb\NetMapSvc;
+require(dirname(__FILE__) . '/Definition.php');
+
+	/**
+	 * 
+	 * @author Jason Gillman Jr. <jgillman@liquidweb.com>
+	 * 
+	 * Provides functions to get paths between two nodes
+	 *
+	 */
+
+	/**
+	 *
+	 * @param integer $startId The node ID to start at
+	 * @param integer $endId The node ID to stop at
+	 * @param integer $depth The maximum number of relations to search for a path
+	 * @param string $pathAlgo The path algorithm to use. Available values are: allSimplePaths, allPaths, shortestPath, dijkstra
+	 * @return array Returns an array of paths, which themselves are an array of relation objects of the NetMapSvc\Relation type
+	 * @throws Exception Throws an exception if, well, there's an exception
+	 */
+	function findPaths($startId, $endId, $depth = 15, $pathAlgo = 'allSimplePaths')
+	{
+		try
+		{
+			$workingPaths = new Paths($startId, $endId, $depth, $pathAlgo);
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception('Error retrieving paths: ' . $e->getMessage());
+		}
+
+		return $workingPaths->getPaths();
+	}
+?>
+

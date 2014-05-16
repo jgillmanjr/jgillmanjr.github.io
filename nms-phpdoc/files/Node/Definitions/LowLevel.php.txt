@@ -1,0 +1,154 @@
+<?php
+namespace LiquidWeb\NetMapSvc\Node;
+	
+	/**
+	 * 
+	 * @author Jason Gillman Jr. <jgillman@liquidweb.com>
+	 *
+	 */
+
+	class physIface extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this->nodeProperties['ifaceType']['type'] = 'string';
+			$this->nodeProperties['ifaceType']['required'] = TRUE;
+			
+			$this->nodeProperties['speed']['type'] = 'integer';
+			$this->nodeProperties['speed']['required'] = TRUE;
+			
+			$this->nodeProperties['speedUnit']['type'] = 'char';
+			$this->nodeProperties['speedUnit']['required'] = TRUE;
+			
+			$this->nodeProperties['mtu']['type'] = 'integer';
+			$this->nodeProperties['mtu']['required'] = FALSE;
+			
+			$this->nodeType = 'Physical Interface';
+
+			$this->validRelations['connects'] = array('physIface');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class virtIface extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this->nodeProperties['virtType']['type'] = 'string';
+			$this->nodeProperties['virtType']['required'] = TRUE;
+				
+			$this->nodeProperties['inetAddress']['type'] = 'string';
+			$this->nodeProperties['inetAddress']['required'] = FALSE;
+				
+			$this->nodeProperties['inetNetmask']['type'] = 'string';
+			$this->nodeProperties['inetNetmask']['required'] = FALSE;
+			
+			$this->nodeProperties['inet6Address']['type'] = 'arrayString';
+			$this->nodeProperties['inet6Address']['required'] = FALSE;
+			
+			$this->nodeProperties['mode']['type'] = 'string';
+			$this->nodeProperties['mode']['required'] = FALSE;
+			
+			$this->nodeProperties['vlan']['type'] = 'integer';
+			$this->nodeProperties['vlan']['required'] = FALSE;
+				
+			$this->nodeType = 'Virtual Interface';
+
+			$this->validRelations['connects'] = array('virtIface');
+			$this->validRelations['from'] = array('physIface', 'router', 'netSwitch', 'firewall', 'server');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class ipNet extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this->nodeProperties['netAddress']['type'] = 'string';
+			$this->nodeProperties['netAddress']['required'] = TRUE;
+			
+			$this->nodeProperties['netPrefix']['type'] = 'short';
+			$this->nodeProperties['netPrefix']['required'] = TRUE;
+			
+			$this->nodeProperties['netType']['type'] = 'string';
+			$this->nodeProperties['netType']['required'] = TRUE;
+			
+			$this->nodeProperties['routingProtocol']['type'] = 'string';
+			$this->nodeProperties['routingProtocol']['required'] = TRUE;
+
+			$this->nodeType = 'IP Network';
+		}
+	}
+	
+	class lbCluster extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this->nodeType = 'Load Balancer Cluster';
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class trfIpGrp extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this->nodeProperties['ipv4List']['type'] = 'arrayString';
+			$this->nodeProperties['ipv4List']['required'] = FALSE;
+			
+			$this->nodeProperties['ipv6List']['type'] = 'arrayString';
+			$this->nodeProperties['ipv6List']['required'] = FALSE;
+
+			$this->nodeType = 'Traffic IP Group';
+
+			$this->validRelations['belongs_to'] = array('loadBalancer', 'lbCluster');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class nodePool extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this->nodeProperties['ipv4List']['type'] = 'arrayString';
+			$this->nodeProperties['ipv4List']['required'] = FALSE;
+				
+			$this->nodeProperties['ipv6List']['type'] = 'arrayString';
+			$this->nodeProperties['ipv6List']['required'] = FALSE;
+
+			$this->nodeType = 'Node Pool';
+
+			$this->validRelations['belongs_to'] = array('loadBalancer', 'lbCluster');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class lbService extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this->nodeProperties['port']['type'] = 'integer';
+			$this->nodeProperties['port']['required'] = TRUE;
+
+			$this->nodeType = 'Load Balancer Service';
+
+			$this->validRelations['belongs_to'] = array('loadBalancer', 'lbCluster');
+			$this->validRelations['uses'] = array('nodePool');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+?>
+
