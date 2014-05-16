@@ -1,0 +1,265 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace LiquidWeb\NetMapSvc\Relation;
+use \LiquidWeb\NetMapSvc;
+
+	/**
+	 *
+	 * @author Jason Gillman Jr. &lt;jgillman@liquidweb.com&gt;
+	 *
+	 * This class defines a relation object
+	 *
+	 */
+	class Relation
+	{
+		/**
+		 * 
+		 * @var string $relationType The relation type
+		 * 
+		 */
+		private $relationType;
+
+		/**
+		 * 
+		 * @var object $neo4jObj The neo4j object
+		 * 
+		 */
+		private $neo4jObj;
+
+		/**
+		 * 
+		 * @var object $startObj The local object representing the starting node
+		 * 
+		 */
+		private $startObj;
+
+		/**
+		 * 
+		 * @var object $endObj The local object representing the ending node
+		 * 
+		 */
+		private $endObj;
+
+		/**
+		 * 
+		 * @var array $relationProperties The properties of the relation
+		 * 
+		 */
+		private $relationProperties;
+
+		/**
+		 *
+		 * @param integer $startId The neo4j ID of the starting node
+		 * @param integer $endId The neo4j ID of the end node
+		 * @param string $relationType The relation type
+		 * @param array $relationProperties Properties of the relation (if any)
+		 * @throws Exception Throws an exception if there is a problem creating the relation
+		 * @throws Exception Throws an exception if there is a problem validating the relation
+		 *
+		 */
+		public function __construct($startId, $endId, $relationType, array $relationProperties = NULL)
+		{
+			try
+			{
+				$this-&gt;startObj = NetMapSvc\Node\fromNeo4j($startId);
+				$this-&gt;endObj = NetMapSvc\Node\fromNeo4j($endId);
+				$this-&gt;relationType = $relationType;
+
+				try
+				{
+					$this-&gt;validate();
+				}
+				catch(\Exception $e)
+				{
+					throw new \Exception('Error validating the relation: ' . $e-&gt;getMessage());
+				}
+
+				if(is_array($relationProperties))
+				{
+					$this-&gt;setProperties($relationProperties);
+				}
+			}
+			catch(\Exception $e)
+			{
+				throw new \Exception('Error creating relation: ' . $e-&gt;getMessage());
+			}
+		}
+
+		/**
+		 *
+		 * @return void If the relation isn't valid, then throw an error, otherwise, be quiet
+		 * @throws Exception
+		 * @throws Exception
+		 *
+		 * This is for validating the relation
+		 *
+		 */
+		private function validate()
+		{
+			if(!array_key_exists($this-&gt;relationType, $this-&gt;startObj-&gt;retrieveValidRelations())) // Is it a valid relation type?
+			{
+				throw new \Exception('The passed in relation type \'' . $this-&gt;relationType . '\' is not valid for the starting node (ID: ' . $this-&gt;startObj-&gt;getNeo4jObj()-&gt;getId() . ')');
+			}
+
+			if(!in_array($this-&gt;endObj-&gt;retrieveNodeClass(), $this-&gt;startObj-&gt;retrieveValidRelations()[$this-&gt;relationType])) // Check to make sure the target is appropriate for the relation type
+			{
+				throw new \Exception('The target (end) node (ID: ' . $this-&gt;endObj-&gt;getNeo4jObj()-&gt;getId() . ') is not valid for the relation type: ' . $this-&gt;relationType);
+			}
+		}
+
+		/**
+		 *
+		 * @param array $relationProperties An array of properties
+		 * @return void
+		 *
+		 */
+		public function setProperties(array $relationProperties)
+		{
+			$this-&gt;relationProperties = $relationProperties;
+		}
+
+		/**
+		 *
+		 * @return array An array of set properties for the relation
+		 *
+		 */
+		public function getProperties()
+		{
+			return $this-&gt;relationProperties;
+		}
+
+		/**
+		 *
+		 * @param string $property The property to remove
+		 *
+		 */
+		public function removeProperty($property)
+		{
+			unset($this-&gt;relationProperties[$property]);
+		}
+
+		/**
+		 *
+		 * @param string $property The property
+		 * @param mixed $value The property value
+		 * @return void
+		 *
+		 */
+		public function setProperty($property, $value)
+		{
+			$this-&gt;relationProperties[$property] = $value;
+		}
+
+		/**
+		 *
+		 * @param object $neo4jObj The neo4j relation object
+		 * @return void
+		 *
+		 * Sets the neo4j relation object
+		 *
+		 */
+		public function setNeo4jObj(\Everyman\Neo4j\Relationship $neo4jObj)
+		{
+			if($neo4jObj-&gt;getType() == $this-&gt;getType()) // Make sure it's the right type
+			{
+				$this-&gt;neo4jObj = $neo4jObj;
+			}
+			else
+			{
+				throw new \Exception('Mismatching relation type: ' . $neo4jObj-&gt;getType() . ' is not ' . $this-&gt;getType());
+			}
+		}
+
+		/**
+		 *
+		 * @return object|null The neo4j object if set
+		 *
+		 */
+		public function &amp;getNeo4jObj()
+		{
+			if($this-&gt;neo4jObj != NULL)
+			{
+				return $this-&gt;neo4jObj;
+			}
+			else // This hacky fix required to prevent &quot;PHP Notice:  Only variable references should be returned by reference&quot;
+			{
+				$null = NULL;
+				return $null;
+			}
+		}
+
+		/**
+		 *
+		 * @return object The starting object
+		 *
+		 */
+		public function getStartObj()
+		{
+			return $this-&gt;startObj;
+		}
+
+		/**
+		 *
+		 * @return object The ending object
+		 *
+		 */
+		public function getEndObj()
+		{
+			return $this-&gt;endObj;
+		}
+
+		/**
+		 *
+		 * @return string The relation type
+		 *
+		 */
+		public function getType()
+		{
+			return $this-&gt;relationType;
+		}
+	}
+?&gt;
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

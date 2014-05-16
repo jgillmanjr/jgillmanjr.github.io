@@ -1,0 +1,262 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace LiquidWeb\NetMapSvc\Node;
+	
+	/**
+	 * 
+	 * @author Jason Gillman Jr. &lt;jgillman@liquidweb.com&gt;
+	 *
+	 */
+
+	class datacenter extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+			
+			$this-&gt;nodeProperties['streetAddress']['type'] = 'string';
+			$this-&gt;nodeProperties['streetAddress']['required'] = TRUE;
+			
+			$this-&gt;nodeProperties['city']['type'] = 'string';
+			$this-&gt;nodeProperties['city']['required'] = TRUE;
+			
+			$this-&gt;nodeProperties['state']['type'] = 'string';
+			$this-&gt;nodeProperties['state']['required'] = FALSE;
+			
+			$this-&gt;nodeProperties['zip']['type'] = 'string';
+			$this-&gt;nodeProperties['zip']['required'] = FALSE;
+			
+			$this-&gt;nodeProperties['country']['type'] = 'string';
+			$this-&gt;nodeProperties['country']['required'] = TRUE;
+			
+			$this-&gt;nodeProperties['designator']['type'] = 'string';
+			$this-&gt;nodeProperties['designator']['required'] = TRUE;
+			
+			$this-&gt;nodeType = 'Datacenter';
+
+			$this-&gt;validRelations['contains'] = array('section', 'row', 'rack');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class popSite extends datacenter
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeProperties['providers']['type'] = 'arrayString';
+			$this-&gt;nodeProperties['providers']['required'] = FALSE;
+			
+			$this-&gt;nodeType = 'POP Site';
+
+			$this-&gt;validRelations['contains'] = array('section', 'row', 'rack'); // Re entered for consistency despite already having this due to inheritence from the datacenter class
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class section extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeProperties['designator']['type'] = 'string';
+			$this-&gt;nodeProperties['designator']['required'] = TRUE;
+			
+			$this-&gt;nodeType = 'Section';
+
+			$this-&gt;validRelations['contains'] = array('row');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class row extends genericNode
+	{	
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeProperties['designator']['type'] = 'string';
+			$this-&gt;nodeProperties['designator']['required'] = TRUE;
+			
+			$this-&gt;nodeType = 'Row';
+
+			$this-&gt;validRelations['contains'] = array('rack');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class rack extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeProperties['designator']['type'] = 'string';
+			$this-&gt;nodeProperties['designator']['required'] = TRUE;
+			
+			$this-&gt;nodeType = 'Rack';
+
+			$this-&gt;validRelations['contains'] = array('router', 'server', 'netSwitch', 'firewall', 'loadBalancer');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	abstract class genericNetworking extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeProperties['vendor']['type'] = 'string';
+			$this-&gt;nodeProperties['vendor']['required'] = FALSE;
+			
+			$this-&gt;nodeProperties['model']['type'] = 'string';
+			$this-&gt;nodeProperties['model']['required'] = FALSE;
+			
+			$this-&gt;nodeProperties['serialNumber']['type'] = 'string';
+			$this-&gt;nodeProperties['serialNumber']['required'] = FALSE;
+			
+			$this-&gt;nodeProperties['vlans']['type'] = 'arrayInt';
+			$this-&gt;nodeProperties['vlans']['required'] = FALSE;
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class router extends genericNetworking
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeProperties['routerType']['type'] = 'string';
+			$this-&gt;nodeProperties['routerType']['required'] = TRUE;
+			
+			$this-&gt;nodeType = 'Router';
+
+			$this-&gt;validRelations['announces'] = array('ipNet');
+			$this-&gt;validRelations['contains'] = array('physIface');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class netSwitch extends genericNetworking // Using netSwitch due to reserved word conflict with switch
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeProperties['switchType']['type'] = 'string';
+			$this-&gt;nodeProperties['switchType']['required'] = TRUE;
+			
+			$this-&gt;nodeType = 'Switch';
+
+			$this-&gt;validRelations['announces'] = array('ipNet');
+			$this-&gt;validRelations['contains'] = array('physIface');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class firewall extends genericNetworking
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeProperties['mode']['type'] = 'string';
+			$this-&gt;nodeProperties['mode']['required'] = TRUE;
+			
+			$this-&gt;nodeType = 'Firewall';
+
+			$this-&gt;validRelations['contains'] = array('physIface');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class loadBalancer extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeType = 'Load Balancer';
+
+			$this-&gt;validRelations['contains'] = array('physIface');
+			$this-&gt;validRelations['belongs_to'] = array('lbCluster');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class server extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeType = 'Server';
+
+			$this-&gt;validRelations['contains'] = array('physIface');
+			$this-&gt;validRelations['announces'] = array('ipNet');
+			$this-&gt;validRelations['parent_of'] = array('virtServer');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+	
+	class virtServer extends genericNode
+	{
+		public function __construct($name, array $propTraits = NULL)
+		{
+
+			$this-&gt;nodeType = 'Virtual Server';
+
+			$this-&gt;validRelations['contains'] = array('virtIface');
+
+			parent::__construct($name, $propTraits);
+		}
+	}
+?&gt;
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace LiquidWeb\NetMapSvc\Paths;
+use \LiquidWeb\NetMapSvc;
+require(dirname(__FILE__) . '/Definition.php');
+
+	/**
+	 * 
+	 * @author Jason Gillman Jr. &lt;jgillman@liquidweb.com&gt;
+	 * 
+	 * Provides functions to get paths between two nodes
+	 *
+	 */
+
+	/**
+	 *
+	 * @param integer $startId The node ID to start at
+	 * @param integer $endId The node ID to stop at
+	 * @param integer $depth The maximum number of relations to search for a path
+	 * @param string $pathAlgo The path algorithm to use. Available values are: allSimplePaths, allPaths, shortestPath, dijkstra
+	 * @return array Returns an array of paths, which themselves are an array of relation objects of the NetMapSvc\Relation type
+	 * @throws Exception Throws an exception if, well, there's an exception
+	 */
+	function findPaths($startId, $endId, $depth = 15, $pathAlgo = 'allSimplePaths')
+	{
+		try
+		{
+			$workingPaths = new Paths($startId, $endId, $depth, $pathAlgo);
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception('Error retrieving paths: ' . $e-&gt;getMessage());
+		}
+
+		return $workingPaths-&gt;getPaths();
+	}
+?&gt;
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

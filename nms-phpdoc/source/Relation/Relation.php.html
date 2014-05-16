@@ -1,0 +1,218 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace LiquidWeb\NetMapSvc\Relation;
+use \LiquidWeb\NetMapSvc;
+require(dirname(__FILE__) . '/Definition.php');
+
+	/**
+	 * 
+	 * @author Jason Gillman Jr. &lt;jgillman@liquidweb.com&gt;
+	 * 
+	 * Provides functions to instantiate relation objects
+	 *
+	 */
+
+	/**
+	 *
+	 * @param integer $startId The neo4j ID of the starting node
+	 * @param integer $endId The neo4j ID of the end node
+	 * @param string $relationType The relation type
+	 * @param array $relationProperties Properties of the relation (if any)
+	 * @return object Returns a relation object
+	 * @throws Exception Throws an exception if the relation creation fails
+	 *
+	 */
+	function makeNew($startId, $endId, $relationType, array $relationProperties = NULL)
+	{
+		try
+		{
+			return new Relation($startId, $endId, $relationType, $relationProperties);
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception('Could not create new relation: ' . $e-&gt;getMessage());
+		}
+	}
+
+	/**
+	 *
+	 * @param object $relationObj The relation object to have the property set on
+	 * @param string $property The name of the property
+	 * @param mixed $value The property value
+	 * @return void
+	 *
+	 */
+	function setProperty(Relation &amp;$relationObj, $property, $value)
+	{
+		$relationObj-&gt;setProperty($property, $value);
+	}
+
+	/**
+	 *
+	 * @param object $relationObj The relation object to have the property removed from
+	 * @param string $property The property to remove
+	 * @return void
+	 *
+	 */
+	function removeProperty(Relation &amp;$relationObj, $property)
+	{
+		$relationObj-&gt;removeProperty($property);
+	}
+
+	/**
+	 *
+	 * @param object $relationObj Loads the relation to be created by reference and creates it in neo4j. Loaded by reference so that the object can have its $neo4jId property set
+	 * @return void
+	 * @throws Exception Throws an exception if something goes sideways
+	 *
+	 */
+	function instantiateUpdate(Relation &amp;$relationObj)
+	{
+		try
+		{
+			$client = $GLOBALS['client'];
+			if($relationObj-&gt;getNeo4jObj() === NULL) // New relation
+			{
+				$stagedRelation = $client-&gt;makeRelationship();
+
+				$startNode = $relationObj-&gt;getStartObj()-&gt;getNeo4jObj();
+				$endNode = $relationObj-&gt;getEndObj()-&gt;getNeo4jObj();
+
+				$stagedRelation-&gt;setStartNode($startNode);
+				$stagedRelation-&gt;setEndNode($endNode);
+				$stagedRelation-&gt;setType($relationObj-&gt;getType());
+
+				if($relationObj-&gt;getProperties() != NULL) // Don't worry about setting properties if none set (removes warnings)
+				{
+					$stagedRelation-&gt;setProperties($relationObj-&gt;getProperties());
+				}
+				$stagedRelation-&gt;save();
+
+				$relationObj-&gt;setNeo4jObj($stagedRelation); // Pass back the neo4j object
+			}
+			else // Existing relation
+			{
+				// Look for properties that should be removed
+				$neo4jProps = $relationObj-&gt;getNeo4jObj()-&gt;getProperties();
+				$propsToRemove = array_diff_key($neo4jProps, $relationObj-&gt;getProperties());
+				if(count($propsToRemove) &gt; 0)
+				{
+					foreach($propsToRemove as $prop =&gt; $value)
+					{
+						$relationObj-&gt;getNeo4jObj()-&gt;removeProperty($prop);
+					}
+				}
+
+				$relationObj-&gt;getNeo4jObj()-&gt;setProperties($relationObj-&gt;getProperties());
+				$relationObj-&gt;getNeo4jObj()-&gt;save();
+			}
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception('Error instantiating or updating relation: ' . $e-&gt;getMessage());
+		}
+	}
+
+	/**
+	 *
+	 * @param int $id The ID of the neo4j relation you want to import
+	 * @return object Returns a local object based on the neo4j relation imported
+	 * @throws Exception Throws an exception if we have issues
+	 *
+	 */
+	function fromNeo4j($id)
+	{
+		try
+		{
+			$client = $GLOBALS['client'];
+			$neo4jRelation = $client-&gt;getRelationship($id);
+			if($neo4jRelation === NULL) // If there is no relation, toss an exception
+			{
+				throw new \Exception('A relation with the ID ' . $id . ' does not exist');
+			}
+			$relationType = $neo4jRelation-&gt;getType();
+			$startId = $neo4jRelation-&gt;getStartNode()-&gt;getId();
+			$endId = $neo4jRelation-&gt;getEndNode()-&gt;getId();
+			$relationProperties = $neo4jRelation-&gt;getProperties();
+
+			$localRelation = makeNew($startId, $endId, $relationType, $relationProperties);
+			$localRelation-&gt;setNeo4jObj($neo4jRelation);
+
+			return $localRelation;
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception('Error creating local relation object from neo4j: ' . $e-&gt;getMessage());
+		}
+	}
+
+	/**
+	 *
+	 * @param integer $id The ID of the neo4j relation to delete
+	 * @return string The status of the operation: TRUE if success, FALSE if the relation doesn't exist
+	 * @throws Exception 
+	 *
+	 */
+	function delete($id)
+	{
+		$client = $GLOBALS['client'];
+		$delRel = $client-&gt;getRelationship($id);
+		try
+		{
+			if($delRel == NULL)
+			{
+				return FALSE;
+			}
+			$delRel-&gt;delete();
+			return TRUE;
+		}
+		catch (\Everyman\Neo4j\Exception $neo4jEx)
+		{
+			throw new \Exception('Neo4j Exception while deleting node ID (' . $id . '): ' . $neo4jEx-&gt;getMessage());
+		}
+	}
+?&gt;
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>

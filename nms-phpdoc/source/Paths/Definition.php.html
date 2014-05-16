@@ -1,0 +1,124 @@
+<html>
+    <head>
+        <script
+            type="text/javascript"
+            src="../../js/jquery-1.4.2.min.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shCore.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushJScript.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushPhp.js">
+        </script>
+        <script
+            type="text/javascript"
+            src="../../syntax_highlighter/scripts/shBrushXml.js">
+        </script>
+        <link
+            href="../../syntax_highlighter/styles/shCore.css" rel="stylesheet"
+            type="text/css"
+        />
+        <link
+            href="../../syntax_highlighter/styles/shCoreEclipse.css"
+            rel="stylesheet" type="text/css"
+        />
+        <link
+            href="../../syntax_highlighter/styles/shThemeWordpress.css"
+            rel="stylesheet" type="text/css"
+        />
+    </head>
+    <body>
+        <pre class="brush: php">&lt;?php
+namespace LiquidWeb\NetMapSvc\Paths;
+use \LiquidWeb\NetMapSvc;
+
+	/**
+	 *
+	 * @author Jason Gillman Jr. &lt;jgillman@liquidweb.com&gt;
+	 *
+	 * This class defines a Paths object
+	 *
+	 */
+	class Paths
+	{
+		/**
+		 *
+		 * @var string $pathAlgo The algorithm used to get the path(s)
+		 *
+		 */
+		private $pathAlgo;
+
+		/**
+		 *
+		 * @var array $paths An array of the returned paths
+		 * 
+		 * A path is essentially an array of locally instantiated relation objects on the order that they appear (\LiquidWeb\NetMapSvc\Relation\Relationship)
+		 *
+		 */
+		private $paths;
+
+		/**
+		 *
+		 * @param integer $startId The neo4j ID of the starting node
+		 * @param integer $endId The neo4j ID of the end node
+		 * @param integer $depth The maximum depth to look for a path
+		 * @param string the path algorithm to use (allSimplePaths, allPaths, shortestPath, dijkstra)
+		 * @throws Exception Throws an exception if there was an issue creating the Paths object
+		 *
+		 */
+		public function __construct($startId, $endId, $depth = 15, $pathAlgo = 'allSimplePaths')
+		{
+			try
+			{
+				$this-&gt;pathAlgo = $pathAlgo;
+
+				$startNode = NetMapSvc\Node\fromNeo4j($startId)-&gt;getNeo4jObj();
+				$endNode = NetMapSvc\Node\fromNeo4j($endId)-&gt;getNeo4jObj();
+
+				$neo4jPaths = $startNode-&gt;findPathsTo($endNode)-&gt;setAlgorithm($pathAlgo)-&gt;setMaxDepth($depth)-&gt;getPaths();
+
+				if(count($neo4jPaths) == 0)
+				{
+					throw new \Exception('No paths were found from node ' . $startId . ' to node ' . $endId . '. Search depth is ' . $depth);
+				}
+
+				foreach($neo4jPaths as $idx =&gt; $neo4jPath)
+				{
+					$neo4jPathRels = $neo4jPath-&gt;getRelationships();
+					foreach($neo4jPathRels as $neo4jPathRel)
+					{
+						$this-&gt;paths[$idx][] = NetMapSvc\Relation\fromNeo4j($neo4jPathRel-&gt;getId());
+					}
+				}
+			}
+			catch(\Exception $e)
+			{
+				throw new \Exception('Error constructing paths object: ' . $e-&gt;getMessage());
+			}
+		}
+
+		/**
+		 *
+		 * @return array Returns an array of the paths found
+		 *
+		 */
+		public function getPaths()
+		{
+			return $this-&gt;paths;
+		}
+	}
+</pre>
+        <script type="text/javascript">
+             SyntaxHighlighter.all();
+             jQuery('.gutter div').each(function(key, data){
+                jQuery(data).prepend('<a name="L'+jQuery(data).text()+'"/>');
+             });
+        </script>
+    </body>
+</html>
